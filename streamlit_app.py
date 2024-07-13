@@ -7,22 +7,10 @@ import requests
 
 # Write directly to the app
 st.title(":cup_with_straw: Customize your Smoothie :cup_with_straw:")
-
 name_on_order = st.text_input('Name on Smoothie:')
-
 st.write("The Name on your Smoothie will be -", name_on_order)
-
 st.write(""" Choose your Fruits to add in your smoothie""")
-
-
-#Commented out the Selection box
-#option = st.selectbox(
-#    "Which fruit you like to add in your Smoothie",
-#    ("Strawberries", "Banana", "Mango" ,"Pomogranade"))
-#
-#st.write("You choose:", option)
 #session = get_active_session()
-
 cnx=st.connection("snowflake")
 session=cnx.session()
 
@@ -30,9 +18,7 @@ my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT
 #st.dataframe(data=my_dataframe, use_container_width=True)
 
 ingredints_list = st.multiselect("Choose upto 5 ingredints of your choice",my_dataframe,max_selections=5)
-fruityvice_response = requests.get("https://fruityvice.com/api/fruit/watermelon")
 #st.text(fruityvice_response.json())
-fv_df = st.dataframe(data= fruityvice_response.json(),use_container_width=True)
                      
 if ingredints_list:
     #st.write("You selected:", ingredints_list)
@@ -41,6 +27,9 @@ if ingredints_list:
     ingredients_string = ''
     for fruit_chosen in ingredints_list:
         ingredients_string += fruit_chosen + ' '
+        st.subheader(fruit_chosen + ' Nutrition Information')
+        fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_chosen)
+        fv_df = st.dataframe(data= fruityvice_response.json(),use_container_width=True)
     
     #st.write(ingredients_string)
 
