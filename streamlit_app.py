@@ -14,8 +14,11 @@ st.write(""" Choose your Fruits to add in your smoothie""")
 cnx=st.connection("snowflake")
 session=cnx.session()
 
-my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'))
+my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'),col('SEARCH_ON'))
 #st.dataframe(data=my_dataframe, use_container_width=True)
+
+# Converting Snowpark Dataframe to Pandas dataframeto use LOC function
+pd_df=my_dataframe.to+pandas()
 
 ingredints_list = st.multiselect("Choose upto 5 ingredints of your choice",my_dataframe,max_selections=5)
 #st.text(fruityvice_response.json())
@@ -27,6 +30,10 @@ if ingredints_list:
     ingredients_string = ''
     for fruit_chosen in ingredints_list:
         ingredients_string += fruit_chosen + ' '
+        
+        serach_on= pd_df.loc[pd_df['FRUIT_NAME']==fruit_chosen,'SEARCH_ON'].iloc[0]
+        st.write('The Serach Value for ',fruit_chosen,' is ',serach_on,'.')
+        
         st.subheader(fruit_chosen + ' Nutrition Information')
         fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_chosen)
         fv_df = st.dataframe(data= fruityvice_response.json(),use_container_width=True)
